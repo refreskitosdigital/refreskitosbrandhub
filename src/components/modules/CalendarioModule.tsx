@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Plus, X } from 'lucide-react';
 
-export function CalendarioModule({ clienteId, initialData, rol }: { clienteId: string, initialData: any[], rol: string }) {
+export function CalendarioModule({ clienteId, initialData, rol, clientesGlobales }: { clienteId?: string, initialData: any[], rol: string, clientesGlobales?: any[] }) {
   const [data, setData] = useState(initialData);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const supabase = createClient();
@@ -13,12 +13,14 @@ export function CalendarioModule({ clienteId, initialData, rol }: { clienteId: s
   const [titulo, setTitulo] = useState('');
   const [prioridad, setPrioridad] = useState('media');
   const [tipoEvento, setTipoEvento] = useState('Publicación');
+  const [selectedCliente, setSelectedCliente] = useState(clienteId || '');
 
   const handleSave = async () => {
     if (!fecha || !titulo) return alert('Fecha y Título son requeridos');
+    if (!selectedCliente) return alert('Debe seleccionar a qué cliente pertenece la tarea');
 
     const newTask = {
-      cliente_id: clienteId,
+      cliente_id: selectedCliente,
       fecha: fecha,
       titulo: `[${tipoEvento}] ${titulo}`,
       prioridad: prioridad,
@@ -28,7 +30,7 @@ export function CalendarioModule({ clienteId, initialData, rol }: { clienteId: s
     const { data: inserted, error } = await supabase
       .from('tareas_calendario')
       .insert([newTask])
-      .select().single();
+      .select('*, clientes(nombre)').single();
 
     if (error) {
       alert('Error: ' + error.message);
@@ -39,15 +41,11 @@ export function CalendarioModule({ clienteId, initialData, rol }: { clienteId: s
     }
   };
 
-  // Helpers basicos para calendario mock de 35 dias (solo visual simplificado)
-  // Lo ideal seria usar una libreria como date-fns, pero hacemos un mock robusto
   const getDays = () => {
     return Array.from({ length: 35 }).map((_, i) => {
-      // Dia simulado del 1 al 31 (solo propósitos visuales básicos en este prototipo)
       const dayNum = (i % 31) + 1;
       const tasksForDay = data.filter(t => {
         const d = new Date(t.fecha);
-        // Sumamos 1 por el timezone UTC simple
         return (d.getDate() + 1) === dayNum;
       });
       return { dayNum, tasks: tasksForDay, index: i };
@@ -58,13 +56,13 @@ export function CalendarioModule({ clienteId, initialData, rol }: { clienteId: s
     <div className="flex flex-col h-full relative">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-syne font-bold text-text">Calendario de Contenidos</h1>
-          <p className="text-text-dim text-sm mt-1">Fechas de publicación, pauta y entrega.</p>
+          <h1 className="text-2xl font-syne font-bold text-text">Calendario Global de Agencia</h1>
+          <p className="text-text-dim text-sm mt-1">Todas las tareas de los clientes en un solo lugar.</p>
         </div>
         
         {rol === 'administrador' && (
           <button onClick={() => setIsModalOpen(true)} className="px-4 py-2 bg-magenta text-black text-sm font-bold rounded-btn hover:opacity-90 transition-opacity flex items-center gap-2">
-            <Plus className="w-4 h-4" /> Nueva Tarea / Fecha
+            <Plus className="w-4 h-4" /> Nueva Tarea
           </button>
         )}
       </div>
@@ -82,8 +80,11 @@ export function CalendarioModule({ clienteId, initialData, rol }: { clienteId: s
               <div className="text-xs font-bold text-text-dim">{dia.dayNum}</div>
               <div className="flex-1 overflow-y-auto space-y-1">
                 {dia.tasks.map((task: any) => (
-                  <div key={task.id} className={`p-1.5 rounded text-[10px] font-bold border-l-2 ${task.prioridad === 'alta' ? 'bg-alert/10 border-alert text-alert' : task.prioridad === 'baja' ? 'bg-panel-2 border-border text-text-dim' : 'bg-lime/10 border-lime text-lime'}`}>
-                    <div className="truncate">{task.titulo}</div>
+                  <div key={task.id} className={`p-1.5 rounded text-[10px] font-bold border-l-2 flex flex-col gap-0.5 ${task.prioridad === 'alta' ? 'bg-alert/10 border-alert text-alert' : task.prioridad === 'baja' ? 'bg-panel-2 border-border text-text-dim' : 'bg-lime/10 border-lime text-lime'}`}>
+                    {clientesGlobales && (
+                      <span className="text-[8px] uppercase opacity-70 truncate">{task.clientes?.nombre || 'Cliente'}</span>
+                    )}
+                    <span className="truncate">{task.titulo}</span>
                   </div>
                 ))}
               </div>
@@ -96,11 +97,23 @@ export function CalendarioModule({ clienteId, initialData, rol }: { clienteId: s
         <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
           <div className="bg-panel border border-border rounded-card p-6 w-full max-w-md">
             <div className="flex justify-between items-center mb-6">
-              <h3 className="font-syne font-bold text-xl text-text">Registrar Fecha</h3>
+              <h3 className="font-syne font-bold text-xl text-text">Registrar Tarea</h3>
               <button onClick={() => setIsModalOpen(false)} className="text-text-dim hover:text-text"><X className="w-5 h-5"/></button>
             </div>
             
             <div className="space-y-4">
+              {clientesGlobales && (
+                <div>
+                  <label className="text-xs text-text-dim block mb-1">Cliente</label>
+                  <select className="w-full bg-black border border-border rounded p-2 text-sm" value={selectedCliente} onChange={e => setSelectedCliente(e.target.value)}>
+                    <option value="" disabled>Selecciona el cliente...</option>
+                    {clientesGlobales.map(c => (
+                      <option key={c.id} value={c.id}>{c.nombre}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+              
               <div>
                 <label className="text-xs text-text-dim block mb-1">Tipo de Evento</label>
                 <select className="w-full bg-black border border-border rounded p-2 text-sm" value={tipoEvento} onChange={e => setTipoEvento(e.target.value)}>
