@@ -22,11 +22,22 @@ export default async function DashboardRoot() {
   // VISTA GLOBAL DE AGENCIA (REFRESKITOS)
   const { data: clientes } = await supabase.from('clientes').select('*').order('nombre');
   
-  // En el futuro: sumar presupuestos_items de todos los clientes
-  // Por ahora mock de sumatoria global
-  const totalFacturadoMes = 4500;
-  const tareasCompletadas = 85;
-  const tareasPendientes = 15;
+  // Obtener facturación real
+  const { data: presupuestos } = await supabase.from('presupuestos').select('descuento, presupuesto_items(precio_unitario, cantidad)');
+  
+  let totalFacturadoMes = 0;
+  if (presupuestos) {
+    presupuestos.forEach(p => {
+      const subtotal = p.presupuesto_items?.reduce((acc: number, item: any) => acc + (Number(item.precio_unitario) * Number(item.cantidad)), 0) || 0;
+      const desc = Number(p.descuento || 0);
+      totalFacturadoMes += (subtotal - desc);
+    });
+  }
+
+  // Tareas mockeadas por ahora o consultas a tabla tareas
+  const { data: tareas } = await supabase.from('tareas_calendario').select('estado');
+  const tareasCompletadas = tareas?.filter(t => t.estado === 'completado' || t.estado === 'publicado').length || 0;
+  const tareasPendientes = tareas?.filter(t => t.estado === 'pendiente' || t.estado === 'idea').length || 0;
 
   return (
     <div className="flex flex-col h-full">
