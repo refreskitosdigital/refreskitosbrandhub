@@ -2,14 +2,36 @@
 
 import { Bell } from 'lucide-react';
 
+import { useRouter, usePathname } from 'next/navigation';
+
 interface TopbarProps {
   rol: 'administrador' | 'cliente';
   clientes?: { id: string; nombre: string }[];
-  currentClienteId?: string;
+  currentClienteId?: string; // fallback if needed
   onClienteChange?: (id: string) => void;
 }
 
 export function Topbar({ rol, clientes, currentClienteId, onClienteChange }: TopbarProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const segments = pathname.split('/').filter(Boolean);
+  
+  let activeId = currentClienteId;
+  if (rol === 'administrador') {
+    if (segments.length >= 2 && segments[0] === 'dashboard' && segments[1] !== 'configuracion') {
+      activeId = segments[1];
+    }
+  }
+
+  const handleChange = (id: string) => {
+    if (onClienteChange) onClienteChange(id);
+    else {
+      // Si estamos en un modulo especifico, tratar de mantenerlo, o ir al dashboard general del cliente
+      const modulo = segments.length >= 3 ? segments[2] : '';
+      router.push(`/dashboard/${id}/${modulo}`);
+    }
+  };
+
   return (
     <header className="h-16 flex items-center px-8 border-b border-border justify-between bg-black shrink-0 relative z-10">
       <div className="flex items-center gap-4">
@@ -18,9 +40,10 @@ export function Topbar({ rol, clientes, currentClienteId, onClienteChange }: Top
             <span className="text-text-dim text-sm font-medium">Workspace actual:</span>
             <select 
               className="bg-panel-2 border border-border text-text text-sm font-medium rounded-btn px-3 py-1.5 focus:outline-none focus:border-magenta transition-colors"
-              value={currentClienteId}
-              onChange={(e) => onClienteChange?.(e.target.value)}
+              value={activeId || ''}
+              onChange={(e) => handleChange(e.target.value)}
             >
+              <option value="" disabled>Selecciona un cliente</option>
               {clientes.map(c => (
                 <option key={c.id} value={c.id}>{c.nombre}</option>
               ))}

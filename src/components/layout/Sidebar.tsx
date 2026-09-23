@@ -21,8 +21,17 @@ interface SidebarProps {
 
 export function Sidebar({ rol, clienteId, clienteNombre }: SidebarProps) {
   const pathname = usePathname();
+  const segments = pathname.split('/').filter(Boolean);
+  
+  let currentClienteId = clienteId;
+  
+  if (rol === 'administrador') {
+    if (segments.length >= 2 && segments[0] === 'dashboard' && segments[1] !== 'configuracion') {
+      currentClienteId = segments[1];
+    }
+  }
 
-  const baseUrl = clienteId ? `/dashboard/${clienteId}` : '/dashboard';
+  const baseUrl = currentClienteId ? `/dashboard/${currentClienteId}` : '/dashboard';
 
   const menuItems = [
     { name: 'Dashboard General', icon: LayoutDashboard, href: baseUrl },
