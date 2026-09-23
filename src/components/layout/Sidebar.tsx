@@ -33,7 +33,7 @@ export function Sidebar({ rol, clienteId, clienteNombre }: SidebarProps) {
 
   const baseUrl = currentClienteId ? `/dashboard/${currentClienteId}` : '/dashboard';
 
-  const menuItems = [
+  const menuItems = currentClienteId ? [
     { name: 'Dashboard General', icon: LayoutDashboard, href: baseUrl },
     { name: 'Calendario de Contenidos', icon: CalendarDays, href: `${baseUrl}/calendario` },
     { name: 'Parrilla de Contenidos', icon: LayoutList, href: `${baseUrl}/parrilla` },
@@ -41,10 +41,12 @@ export function Sidebar({ rol, clienteId, clienteNombre }: SidebarProps) {
     { name: 'Evidencias / Captures', icon: ImageIcon, href: `${baseUrl}/evidencias` },
     { name: 'Métricas y ADS', icon: LineChart, href: `${baseUrl}/metricas` },
     { name: 'Ventas y Leads', icon: Target, href: `${baseUrl}/ventas` },
+  ] : [
+    { name: 'Directorio de Clientes', icon: LayoutDashboard, href: '/dashboard' }
   ];
 
   if (rol === 'administrador') {
-    menuItems.push({ name: 'Configuración / Clientes', icon: Settings, href: '/dashboard/configuracion' });
+    menuItems.push({ name: 'Configuración de Sistema', icon: Settings, href: '/dashboard/configuracion' });
   }
 
   return (
