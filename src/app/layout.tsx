@@ -5,13 +5,17 @@ import "./globals.css";
 const syne = Syne({ 
   subsets: ["latin"], 
   weight: ["600", "700", "800"],
-  variable: "--font-syne"
+  variable: "--font-syne",
+  display: 'swap',
+  preload: false,
 });
 
 const dmSans = DM_Sans({ 
   subsets: ["latin"],
   weight: ["400", "500", "700"],
-  variable: "--font-dm-sans"
+  variable: "--font-dm-sans",
+  display: 'swap',
+  preload: false,
 });
 
 export const metadata: Metadata = {
@@ -25,8 +29,6 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    // Default to dark class to satisfy the native dark mode requirement, 
-    // but allowing toggling later via state/next-themes
     <html lang="es" className="dark">
       <body className={`${dmSans.variable} ${syne.variable} bg-black text-text font-sans antialiased min-h-screen relative scrollbar-minimal selection:bg-magenta selection:text-black`}>
         {/* Background Marketing Pattern */}
