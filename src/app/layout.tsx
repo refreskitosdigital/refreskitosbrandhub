@@ -1,22 +1,5 @@
 import type { Metadata } from "next";
-import { Syne, DM_Sans } from "next/font/google";
 import "./globals.css";
-
-const syne = Syne({ 
-  subsets: ["latin"], 
-  weight: ["600", "700", "800"],
-  variable: "--font-syne",
-  display: 'swap',
-  preload: false
-});
-
-const dmSans = DM_Sans({ 
-  subsets: ["latin"],
-  weight: ["400", "500", "700"],
-  variable: "--font-dm-sans",
-  display: 'swap',
-  preload: false
-});
 
 export const metadata: Metadata = {
   title: "REFRESKITOS BRAND HUB",
@@ -29,10 +12,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    // Default to dark class to satisfy the native dark mode requirement, 
-    // but allowing toggling later via state/next-themes
     <html lang="es" className="dark">
-      <body className={`${dmSans.variable} ${syne.variable} bg-black text-text font-sans antialiased min-h-screen relative scrollbar-minimal selection:bg-magenta selection:text-black`}>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Syne:wght@400..800&display=swap" rel="stylesheet" />
+      </head>
+      <body className="bg-black text-text font-sans antialiased min-h-screen relative scrollbar-minimal selection:bg-magenta selection:text-black">
         {/* Background Marketing Pattern */}
         <div className="pointer-events-none fixed inset-0 z-[-1] bg-marketing-pattern bg-[length:200px_200px] opacity-100 mix-blend-screen dark:mix-blend-lighten transition-opacity"></div>
         {children}
