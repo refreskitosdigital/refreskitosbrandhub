@@ -35,6 +35,14 @@ export function Topbar({ rol, clientes, currentClienteId, onClienteChange }: Top
   return (
     <header className="h-16 flex items-center px-8 border-b border-border justify-between bg-black shrink-0 relative z-10">
       <div className="flex items-center gap-4">
+        {rol === 'administrador' && (
+          <button 
+            onClick={() => router.push('/dashboard')}
+            className="mr-4 text-xs font-bold text-magenta bg-magenta/10 hover:bg-magenta/20 px-3 py-1.5 rounded transition-colors"
+          >
+            ← Vista Global
+          </button>
+        )}
         {rol === 'administrador' && clientes && (
           <>
             <span className="text-text-dim text-sm font-medium">Workspace actual:</span>

@@ -5,13 +5,17 @@ import "./globals.css";
 const syne = Syne({ 
   subsets: ["latin"], 
   weight: ["600", "700", "800"],
-  variable: "--font-syne"
+  variable: "--font-syne",
+  display: 'swap',
+  preload: false
 });
 
 const dmSans = DM_Sans({ 
   subsets: ["latin"],
   weight: ["400", "500", "700"],
-  variable: "--font-dm-sans"
+  variable: "--font-dm-sans",
+  display: 'swap',
+  preload: false
 });
 
 export const metadata: Metadata = {
