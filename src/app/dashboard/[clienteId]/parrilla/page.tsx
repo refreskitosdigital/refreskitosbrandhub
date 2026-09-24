@@ -1,13 +1,13 @@
 import { createClient } from '@/lib/supabase/server';
 import { notFound } from 'next/navigation';
 import { KanbanModule } from '@/components/modules/KanbanModule';
+import { MockupApprovalModule } from '@/components/modules/MockupApprovalModule';
 
 export default async function ParrillaPage({ params }: { params: { clienteId: string } }) {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) notFound();
 
-  // Obtener rol
   const { data: userData } = await supabase
     .from('usuarios_clientes')
     .select('rol')
@@ -18,11 +18,12 @@ export default async function ParrillaPage({ params }: { params: { clienteId: st
   if (!cliente) notFound();
 
   return (
-    <div className="h-[calc(100vh-8rem)]">
-      <KanbanModule 
-        clienteId={params.clienteId} 
-        rol={userData?.rol || 'cliente'} 
-      />
+    <div className="h-[calc(100vh-8rem)] p-4">
+      {userData?.rol === 'administrador' ? (
+        <KanbanModule clienteId={params.clienteId} rol="administrador" />
+      ) : (
+        <MockupApprovalModule clienteId={params.clienteId} />
+      )}
     </div>
   );
 }

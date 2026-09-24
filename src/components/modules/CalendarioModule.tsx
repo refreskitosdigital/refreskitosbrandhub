@@ -21,16 +21,16 @@ export function CalendarioModule({ clienteId, initialData, rol, clientesGlobales
 
     const newTask = {
       cliente_id: selectedCliente,
-      fecha: fecha,
+      fecha_publicacion: fecha,
       titulo: `[${tipoEvento}] ${titulo}`,
-      prioridad: prioridad,
-      estado: 'pendiente'
+      etiquetas: [prioridad],
+      estado_cliente: 'interno'
     };
 
     const { data: inserted, error } = await supabase
-      .from('tareas_calendario')
+      .from('kanban_cards')
       .insert([newTask])
-      .select('*, clientes(nombre)').single();
+      .select('id, titulo, fecha_publicacion as fecha, estado_cliente as estado, etiquetas as prioridad').single();
 
     if (error) {
       alert('Error: ' + error.message);

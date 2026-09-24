@@ -20,9 +20,10 @@ export default async function GlobalCalendarioPage() {
   const { data: clientes } = await supabase.from('clientes').select('id, nombre').order('nombre');
 
   const { data: tareas } = await supabase
-    .from('tareas_calendario')
-    .select('*, clientes(nombre)')
-    .order('fecha', { ascending: true });
+    .from('kanban_cards')
+    .select('id, titulo, fecha_publicacion as fecha, estado_cliente as estado, etiquetas as prioridad, clientes(nombre)')
+    .not('fecha_publicacion', 'is', null)
+    .order('fecha_publicacion', { ascending: true });
 
   return (
     <div className="h-full">

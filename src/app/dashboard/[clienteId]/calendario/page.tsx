@@ -16,12 +16,13 @@ export default async function CalendarioPage({ params }: { params: { clienteId: 
   const { data: cliente } = await supabase.from('clientes').select('nombre').eq('id', params.clienteId).single();
   if (!cliente) notFound();
 
-  // Traer tareas
+  // Traer tareas (Ahora se sincronizan con las tarjetas de Kanban)
   const { data: tareas } = await supabase
-    .from('tareas_calendario')
-    .select('*')
+    .from('kanban_cards')
+    .select('id, titulo, fecha_publicacion as fecha, estado_cliente as estado, etiquetas as prioridad')
     .eq('cliente_id', params.clienteId)
-    .order('fecha', { ascending: true });
+    .not('fecha_publicacion', 'is', null)
+    .order('fecha_publicacion', { ascending: true });
 
   return (
     <div className="h-full">
