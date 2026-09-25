@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -10,7 +10,8 @@ import {
   Image as ImageIcon, 
   LineChart, 
   Target, 
-  Settings 
+  Settings,
+  Users
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -26,6 +27,7 @@ export function Sidebar({ rol, clienteId, clienteNombre }: SidebarProps) {
   let currentClienteId = clienteId;
   
   if (rol === 'administrador') {
+    menuItems.push({ name: 'Rendimiento (Equipo)', icon: Users, href: '/dashboard/equipo' });
     if (segments.length >= 2 && segments[0] === 'dashboard' && segments[1] !== 'configuracion') {
       currentClienteId = segments[1];
     }
@@ -44,6 +46,7 @@ export function Sidebar({ rol, clienteId, clienteNombre }: SidebarProps) {
   ];
 
   if (rol === 'administrador') {
+    menuItems.push({ name: 'Rendimiento (Equipo)', icon: Users, href: '/dashboard/equipo' });
     menuItems.push({ name: 'Configuración de Sistema', icon: Settings, href: '/dashboard/configuracion' });
   }
 

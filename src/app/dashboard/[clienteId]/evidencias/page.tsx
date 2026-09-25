@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { notFound } from 'next/navigation';
-import { BrandKitModule } from '@/components/modules/BrandKitModule';
+import EvidenciasPageWrapper from '@/components/modules/EvidenciasWrapper';
 
 export default async function EvidenciasPage({ params }: { params: { clienteId: string } }) {
   const supabase = createClient();
@@ -16,11 +16,19 @@ export default async function EvidenciasPage({ params }: { params: { clienteId: 
   const { data: cliente } = await supabase.from('clientes').select('nombre').eq('id', params.clienteId).single();
   if (!cliente) notFound();
 
+  // Fetch Evidencias Data
+  const { data: evidencias } = await supabase
+    .from('evidencias')
+    .select('*')
+    .eq('cliente_id', params.clienteId)
+    .order('fecha', { ascending: false });
+
   return (
-    <div className="h-full">
-      <BrandKitModule 
+    <div className="h-[calc(100vh-8rem)]">
+      <EvidenciasPageWrapper 
         clienteId={params.clienteId} 
         rol={userData?.rol || 'cliente'} 
+        evidenciasData={evidencias || []}
       />
     </div>
   );
