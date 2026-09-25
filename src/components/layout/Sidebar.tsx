@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -27,8 +27,7 @@ export function Sidebar({ rol, clienteId, clienteNombre }: SidebarProps) {
   let currentClienteId = clienteId;
   
   if (rol === 'administrador') {
-    menuItems.push({ name: 'Rendimiento (Equipo)', icon: Users, href: '/dashboard/equipo' });
-    if (segments.length >= 2 && segments[0] === 'dashboard' && segments[1] !== 'configuracion') {
+    if (segments.length >= 2 && segments[0] === 'dashboard' && segments[1] !== 'configuracion' && segments[1] !== 'equipo') {
       currentClienteId = segments[1];
     }
   }
@@ -40,7 +39,7 @@ export function Sidebar({ rol, clienteId, clienteNombre }: SidebarProps) {
     { name: 'Calendario de Contenidos', icon: CalendarDays, href: `${baseUrl}/calendario` },
     { name: 'Parrilla de Contenidos', icon: LayoutList, href: `${baseUrl}/parrilla` },
     { name: 'Presupuesto y Facturación', icon: CircleDollarSign, href: `${baseUrl}/presupuesto` },
-    { name: 'Evidencias / Captures', icon: ImageIcon, href: `${baseUrl}/evidencias` },
+    { name: 'Caja Fuerte / Evidencias', icon: ImageIcon, href: `${baseUrl}/evidencias` },
     { name: 'Métricas y ADS', icon: LineChart, href: `${baseUrl}/metricas` },
     { name: 'Ventas y Leads', icon: Target, href: `${baseUrl}/ventas` },
   ];
